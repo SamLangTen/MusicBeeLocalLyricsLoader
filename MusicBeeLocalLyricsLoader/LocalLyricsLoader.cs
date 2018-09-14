@@ -104,7 +104,7 @@ namespace MusicBeePlugin
         private string selfFilenameURL;
         public string[] GetProviders()
         {
-            return LoaderManager.GetLyricsLoaderNames().Select(n => "LocalLyricsLoader - " + n).ToArray();
+            return LoaderManager.GetLyricsLoaderNames().Select(n => $"{n}(LocalLyricsLoader)").ToArray();
         }
 
         // return lyrics for the requested artist/title from the requested provider
@@ -114,7 +114,7 @@ namespace MusicBeePlugin
         {
             if (!provider.Contains("LocalLyricsLoader")) return null;
             if (sourceFileUrl == "") sourceFileUrl = mbApiInterface.NowPlaying_GetFileUrl(); ;
-            var loader = LoaderManager.GetLyricsLoader(provider.Replace("LocalLyricsLoader - ", ""));
+            var loader = LoaderManager.GetLyricsLoader(provider.Replace("(LocalLyricsLoader)", ""));
             var lyrics = loader.RetrieveLyrics(sourceFileUrl, artist, trackTitle, album, synchronisedPreferred, provider);
             return lyrics;
 
