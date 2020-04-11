@@ -38,7 +38,7 @@ namespace MusicBeePlugin
             if (!File.Exists(path))
             {
                 SearchPath = "%";
-                FilePattern = "{title}";
+                FilePattern = "{title}.lrc";
             }
             else
             {

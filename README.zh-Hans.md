@@ -21,7 +21,7 @@
     文件名:     F:\Music Library\Anime\Sword Art Online\『ソードアート・オンライン』ED2テーマ「Overfly」\SECL-1223.flac
 
     搜索路径:       %, F:\Lyrics\
-    文件名匹配:     {artist} - {title}, {filename}
+    文件名匹配:     {artist} - {title}.lrc, {filename}.lrc
 
 插件会尝试加载以下文件
 

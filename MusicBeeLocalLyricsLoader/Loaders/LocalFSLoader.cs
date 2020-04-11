@@ -26,16 +26,14 @@ namespace MusicBeePlugin.LocalLyricsLoader.Loaders
 
             var filePatterns = from f in Regex.Split(Configuration.FilePattern, "\r\n|\r|\n") select f.Replace("{filename}", clearFilename).Replace("{title}", clearTitle).Replace("{artist}", clearArtist).Replace("{album}", clearAlbum);
             var searchPathes = from f in Regex.Split(Configuration.SearchPath, "\r\n|\r|\n") select f.Replace("%", folderPath).Replace("{filename}", clearFilename).Replace("{title}", clearTitle).Replace("{artist}", clearArtist).Replace("{album}", clearAlbum);
-            var allFiles = from p in searchPathes from f in filePatterns select Path.Combine(p, f + ".lrc");
+            var allFiles = from p in searchPathes from f in filePatterns select Path.Combine(p, f);
 
-            foreach (var item in allFiles)
-            {
-                if (File.Exists(item))
-                    return File.ReadAllText(item);
-                else
-                    return null;
-            }
-            return null;
+
+            var availableFile = allFiles.FirstOrDefault(f => File.Exists(f));
+            if (availableFile != null)
+                return File.ReadAllText(availableFile);
+            else
+                return null;
         }
     }
 }

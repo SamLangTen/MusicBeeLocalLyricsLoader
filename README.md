@@ -21,7 +21,7 @@ Example:
     Filename:   F:\Music Library\Anime\Sword Art Online\『ソードアート・オンライン』ED2テーマ「Overfly」\SECL-1223.flac
 
     Searching Path: %, F:\Lyrics\
-    File pattern:   {artist} - {title}, {filename}
+    File pattern:   {artist} - {title}.lrc, {filename}.lrc
 
 Plugin will try to load these files:
 
