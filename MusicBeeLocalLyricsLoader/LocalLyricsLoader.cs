@@ -4,12 +4,15 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+
 namespace MusicBeePlugin
 {
     public partial class Plugin
     {
         private MusicBeeApiInterface mbApiInterface;
         private PluginInfo about = new PluginInfo();
+        private ConfigPanel configPanel;
 
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
@@ -27,7 +30,7 @@ namespace MusicBeePlugin
             about.MinInterfaceVersion = MinInterfaceVersion;
             about.MinApiRevision = MinApiRevision;
             about.ReceiveNotifications = (ReceiveNotificationFlags.PlayerEvents & ReceiveNotificationFlags.TagEvents);
-            about.ConfigurationPanelHeight = 0;   // height in pixels that musicbee should reserve in a panel for config settings. When set, a handle to an empty panel will be passed to the Configure function
+            about.ConfigurationPanelHeight = 400;   // height in pixels that musicbee should reserve in a panel for config settings. When set, a handle to an empty panel will be passed to the Configure function
             return about;
         }
 
@@ -40,14 +43,13 @@ namespace MusicBeePlugin
             // if about.ConfigurationPanelHeight is set to 0, you can display your own popup window
             if (panelHandle != IntPtr.Zero)
             {
-                Panel configPanel = (Panel)Panel.FromHandle(panelHandle);
-                Label prompt = new Label();
-                prompt.AutoSize = true;
-                prompt.Location = new Point(0, 0);
-                prompt.Text = "prompt:";
-                TextBox textBox = new TextBox();
-                textBox.Bounds = new Rectangle(60, 0, 100, textBox.Height);
-                configPanel.Controls.AddRange(new Control[] { prompt, textBox });
+                Panel panel = (Panel)Panel.FromHandle(panelHandle);
+                configPanel = new ConfigPanel
+                {
+                    FilePattern = Configuration.FilePattern,
+                    SearchPath = Configuration.SearchPath
+                };
+                panel.Controls.Add(configPanel);
             }
             return false;
         }
@@ -57,7 +59,13 @@ namespace MusicBeePlugin
         public void SaveSettings()
         {
             // save any persistent settings in a sub-folder of this path
-            string dataPath = mbApiInterface.Setting_GetPersistentStoragePath();
+            string dataPath = Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "LocalLyricsLoaderSettings.xml");
+            if (configPanel != null)
+            {
+                Configuration.FilePattern = configPanel.FilePattern;
+                Configuration.SearchPath = configPanel.SearchPath;
+                Configuration.SaveConfig(dataPath);
+            }
         }
 
         // MusicBee is closing the plugin (plugin is being disabled by user or MusicBee is shutting down)
@@ -68,6 +76,8 @@ namespace MusicBeePlugin
         // uninstall this plugin - clean up any persisted files
         public void Uninstall()
         {
+            string dataPath = Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "LocalLyricsLoaderSettings.xml");
+            if (File.Exists(dataPath)) File.Delete(dataPath);
         }
 
         // receive event notifications from MusicBee
@@ -78,23 +88,13 @@ namespace MusicBeePlugin
             switch (type)
             {
                 case NotificationType.PluginStartup:
-                    // perform startup initialisation
-                    switch (mbApiInterface.Player_GetPlayState())
-                    {
-                        case PlayState.Playing:
-                          
-                            break;
-                        case PlayState.Paused:
-                            // ...
-                            break;
-                    }
-                    break;
-                case NotificationType.PlayStateChanged:
+                    //Config
+                    string dataPath = Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "LocalLyricsLoaderSettings.xml");
+                    Configuration.LoadConfig(dataPath);
 
-                    break;
-                case NotificationType.TrackChanged:
-                    string artist = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Artist);
-                    // ...
+                    //Local
+                    var mbLang = mbApiInterface.MB_GetLocalisation("Main.field.173", "Language");
+                    LocalizationManager.SetByMBField173(mbLang);
                     break;
             }
         }
