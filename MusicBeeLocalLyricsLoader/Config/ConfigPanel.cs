@@ -16,8 +16,16 @@ namespace MusicBeePlugin
             InitializeComponent();
         }
 
-        public string FilePattern { get => textBox2.Text; set => textBox2.Text = value; }
-        public string SearchPath { get => textBox1.Text; set => textBox1.Text = value; }
+        public List<string> FilePattern
+        {
+            get => textBox2.Lines.ToList();
+            set => textBox2.Lines = value.ToArray();
+        }
+        public List<string> SearchPath
+        {
+            get => textBox1.Lines.ToList();
+            set => textBox1.Lines = value.ToArray();
+        }
 
         private void ConfigPanel_Load(object sender, EventArgs e)
         {

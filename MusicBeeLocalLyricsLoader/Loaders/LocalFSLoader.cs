@@ -24,8 +24,8 @@ namespace MusicBeePlugin.LocalLyricsLoader.Loaders
             string clearFilename = RemoveInvalidFileNameChars(Path.GetFileNameWithoutExtension(sourceFileUrl), '_');
             string folderPath = Path.GetDirectoryName(sourceFileUrl);
 
-            var filePatterns = from f in Regex.Split(Configuration.FilePattern, "\r\n|\r|\n") select f.Replace("{filename}", clearFilename).Replace("{title}", clearTitle).Replace("{artist}", clearArtist).Replace("{album}", clearAlbum);
-            var searchPathes = from f in Regex.Split(Configuration.SearchPath, "\r\n|\r|\n") select f.Replace("%", folderPath).Replace("{filename}", clearFilename).Replace("{title}", clearTitle).Replace("{artist}", clearArtist).Replace("{album}", clearAlbum);
+            var filePatterns = from f in Configuration.FilePatterns select f.Replace("{filename}", clearFilename).Replace("{title}", clearTitle).Replace("{artist}", clearArtist).Replace("{album}", clearAlbum);
+            var searchPathes = from f in Configuration.SearchPaths select f.Replace("%", folderPath).Replace("{filename}", clearFilename).Replace("{title}", clearTitle).Replace("{artist}", clearArtist).Replace("{album}", clearAlbum);
             var allFiles = from p in searchPathes from f in filePatterns select Path.Combine(p, f);
 
 

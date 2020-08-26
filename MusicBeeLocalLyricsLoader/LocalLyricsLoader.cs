@@ -46,8 +46,8 @@ namespace MusicBeePlugin
                 Panel panel = (Panel)Panel.FromHandle(panelHandle);
                 configPanel = new ConfigPanel
                 {
-                    FilePattern = Configuration.FilePattern,
-                    SearchPath = Configuration.SearchPath
+                    FilePattern = Configuration.FilePatterns,
+                    SearchPath = Configuration.SearchPaths
                 };
                 panel.Controls.Add(configPanel);
             }
@@ -62,8 +62,8 @@ namespace MusicBeePlugin
             string dataPath = Path.Combine(mbApiInterface.Setting_GetPersistentStoragePath(), "LocalLyricsLoaderSettings.xml");
             if (configPanel != null)
             {
-                Configuration.FilePattern = configPanel.FilePattern;
-                Configuration.SearchPath = configPanel.SearchPath;
+                Configuration.FilePatterns = configPanel.FilePattern;
+                Configuration.SearchPaths = configPanel.SearchPath;
                 Configuration.SaveConfig(dataPath);
             }
         }
